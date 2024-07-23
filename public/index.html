@@ -218,6 +218,12 @@
             <div class="chart-container">
                 <canvas id="waterQualityChart"></canvas>
             </div>
+            <div class="chart-container">
+                <canvas id="waterUsagePieChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="waterFlowBarChart"></canvas>
+            </div>
             
             <div class="download-report">
                 <button onclick="downloadPDF()">Download Report</button>
@@ -231,21 +237,23 @@
         </main>
         <footer>
             <div class="about-section">
-                <p>© Naila Rais, Developed by [Your Name]</p>
+                <p>© Naila Rais, Developed by Individual</p>
             </div>
         </footer>
     </div>
     <script>
         // Create global variables for charts
-        let waterVolumeChart, waterQualityChart;
+        let waterVolumeChart, waterQualityChart, waterUsagePieChart, waterFlowBarChart;
 
         // Function to initialize the charts
         function initCharts() {
             const ctxVolume = document.getElementById('waterVolumeChart').getContext('2d');
             const ctxQuality = document.getElementById('waterQualityChart').getContext('2d');
+            const ctxPie = document.getElementById('waterUsagePieChart').getContext('2d');
+            const ctxBar = document.getElementById('waterFlowBarChart').getContext('2d');
 
             waterVolumeChart = new Chart(ctxVolume, {
-                type: 'line', // Or another chart type
+                type: 'line',
                 data: {
                     labels: [],
                     datasets: [{
@@ -262,7 +270,7 @@
             });
 
             waterQualityChart = new Chart(ctxQuality, {
-                type: 'line', // Or another chart type
+                type: 'line',
                 data: {
                     labels: [],
                     datasets: [{
@@ -270,6 +278,38 @@
                         data: [],
                         borderColor: '#1E90FF',
                         backgroundColor: 'rgba(30, 144, 255, 0.2)',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            waterUsagePieChart = new Chart(ctxPie, {
+                type: 'pie',
+                data: {
+                    labels: ['Usage', 'Remaining'],
+                    datasets: [{
+                        label: 'Water Usage Distribution',
+                        data: [],
+                        backgroundColor: ['#ff7e5f', '#ffd700'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            waterFlowBarChart = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: ['Inflow', 'Outflow'],
+                    datasets: [{
+                        label: 'Water Flow (m³)',
+                        data: [],
+                        backgroundColor: ['#1E90FF', '#ff7e5f'],
                     }]
                 },
                 options: {
@@ -295,11 +335,11 @@
             const W = parseFloat(document.getElementById('W').value);
             
             // Perform calculations for model (placeholder logic)
-            const finalWaterVolume = V_initial + I - O - U; // Simplified calculation
+            const finalWaterVolume = V_initial + I - O - U;
             const waterDeficitSurplus = finalWaterVolume - E;
             const seasonalAdjustedVolume = finalWaterVolume * S;
-            const predictedWaterQualityIndex = WQI - (T - 20) * 0.5; // Simplified prediction
-            const forecastedWaterVolume = finalWaterVolume + P; // Simplified forecast
+            const predictedWaterQualityIndex = WQI - (T - 20) * 0.5;
+            const forecastedWaterVolume = finalWaterVolume + P;
 
             // Update results in the page
             document.getElementById('finalWaterVolume').innerText = finalWaterVolume.toFixed(2);
@@ -309,23 +349,28 @@
             document.getElementById('forecastedWaterVolume').innerText = forecastedWaterVolume.toFixed(2);
 
             // Update charts
-            updateCharts(finalWaterVolume, predictedWaterQualityIndex);
+            updateCharts(finalWaterVolume, waterDeficitSurplus, seasonalAdjustedVolume, predictedWaterQualityIndex, I, O);
         }
 
         // Function to update charts
-        function updateCharts(waterVolume, waterQuality) {
-            // Assuming you have historical data to display on charts
-            const labels = ['Current', 'Forecast'];
-            const volumeData = [waterVolume, waterVolume + 5000]; // Example data
-            const qualityData = [waterQuality, waterQuality + 5]; // Example data
-
-            waterVolumeChart.data.labels = labels;
-            waterVolumeChart.data.datasets[0].data = volumeData;
+        function updateCharts(waterVolume, waterDeficitSurplus, seasonalAdjustedVolume, waterQuality, inflow, outflow) {
+            // Line chart for water volume
+            waterVolumeChart.data.labels = ['Current', 'Forecast'];
+            waterVolumeChart.data.datasets[0].data = [waterVolume, waterVolume + 5000];
             waterVolumeChart.update();
 
-            waterQualityChart.data.labels = labels;
-            waterQualityChart.data.datasets[0].data = qualityData;
+            // Line chart for water quality
+            waterQualityChart.data.labels = ['Current', 'Forecast'];
+            waterQualityChart.data.datasets[0].data = [waterQuality, waterQuality + 5];
             waterQualityChart.update();
+
+            // Pie chart for water usage distribution
+            waterUsagePieChart.data.datasets[0].data = [waterVolume - waterDeficitSurplus, waterDeficitSurplus];
+            waterUsagePieChart.update();
+
+            // Bar chart for water inflow and outflow
+            waterFlowBarChart.data.datasets[0].data = [inflow, outflow];
+            waterFlowBarChart.update();
         }
 
         // Function to download the report as a PDF
@@ -348,7 +393,7 @@
             // Add charts
             html2canvas(document.querySelector('.chart-container')).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
-                doc.addImage(imgData, 'PNG', 14, 90, 180, 100);
+                doc.addImage(imgData, 'PNG', 14, 90, 180, 150);
                 doc.save('Water_Management_Model_Report.pdf');
             });
         }
@@ -367,6 +412,16 @@
                 waterQualityChart.data.datasets[0].data = [];
                 waterQualityChart.update();
             }
+            if (waterUsagePieChart) {
+                waterUsagePieChart.data.labels = [];
+                waterUsagePieChart.data.datasets[0].data = [];
+                waterUsagePieChart.update();
+            }
+            if (waterFlowBarChart) {
+                waterFlowBarChart.data.labels = [];
+                waterFlowBarChart.data.datasets[0].data = [];
+                waterFlowBarChart.update();
+            }
         }
 
         // Initialize charts on page load
@@ -376,3 +431,4 @@
     </script>
 </body>
 </html>
+
