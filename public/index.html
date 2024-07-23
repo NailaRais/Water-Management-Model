@@ -1,1 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Water Management Model</title>
+    <!-- Libraries for Charts and Machine Learning -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.13.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/websockets/1.0.27/websockets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Advanced Water Management Model</h1>
+        </header>
+        <main>
+            <form id="modelForm">
+                <div class="form-group">
+                    <label for="P">Total Precipitation (mm):</label>
+                    <input type="number" id="P" name="P" value="100">
+                </div>
+                <div class="form-group">
+                    <label for="E">Total Evaporation (mm):</label>
+                    <input type="number" id="E" name="E" value="50">
+                </div>
+                <!-- Additional form fields -->
+                <button type="button" onclick="runModel()">Run Model</button>
+                <button type="button" id="downloadReport">Download Report</button>
+            </form>
+
+            <div class="chart-container">
+                <h2>Water Usage Analysis</h2>
+                <div id="waterUsageChart"></div>
+            </div>
+
+            <div class="chart-container">
+                <h2>Desalination Efficiency</h2>
+                <div id="desalinationChart"></div>
+            </div>
+
+            <div class="chart-container">
+                <h2>Water Quality Index</h2>
+                <div id="waterQualityChart"></div>
+            </div>
+
+            <div class="help-section">
+                <h3>Help and Documentation</h3>
+                <p>For detailed guidance on using this model, refer to the documentation provided.</p>
+                <p>Ensure you upload valid CSV files and input accurate data for best results.</p>
+            </div>
+
+            <footer>
+                <p>© Naila Rais, Developed by [Your Name]</p>
+            </footer>
+        </main>
+    </div>
+
+    <script src="../src/app.js"></script>
+</body>
+</html>
  
