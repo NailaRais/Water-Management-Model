@@ -4,18 +4,169 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advanced Water Management Model</title>
-    <!-- Libraries for Charts and Machine Learning -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.13.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/websockets/1.0.27/websockets.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            color: #333;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            width: 90%;
+            max-width: 1200px;
+            text-align: center;
+            border: 2px solid #ddd;
+            overflow: auto;
+        }
+
+        h1 {
+            color: #ff7e5f;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #ff7e5f;
+            margin-top: 30px;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        form {
+            background: linear-gradient(to right, #87CEFA, #1E90FF);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            margin: 20px auto;
+            max-width: 800px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="number"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            background-color: #f1f1f1;
+            color: #333;
+        }
+
+        button {
+            background-color: #ff7e5f;
+            color: white;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #feb47b;
+        }
+
+        p {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #555;
+        }
+
+        .chart-container {
+            margin: 20px 0;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .two-column-section {
+            display: flex;
+            justify-content: space-around;
+            margin: 40px 0;
+        }
+
+        .two-column-section div {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            max-width: 45%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .results span {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .help-section {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            margin: 40px 0;
+            max-width: 800px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .help-section h3 {
+            color: #ff7e5f;
+        }
+
+        .help-section p {
+            color: #555;
+        }
+
+        .download-report {
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin: 20px 0;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .about-section {
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
+            <img src="https://via.placeholder.com/50" class="avatar" alt="Avatar">
             <h1>Advanced Water Management Model</h1>
         </header>
         <main>
@@ -28,39 +179,256 @@
                     <label for="E">Total Evaporation (mm):</label>
                     <input type="number" id="E" name="E" value="50">
                 </div>
-                <!-- Additional form fields -->
+                <div class="form-group">
+                    <label for="U">Total Water Usage (m³):</label>
+                    <input type="number" id="U" name="U" value="10000">
+                </div>
+                <div class="form-group">
+                    <label for="I">Total Inflow (m³):</label>
+                    <input type="number" id="I" name="I" value="20000">
+                </div>
+                <div class="form-group">
+                    <label for="O">Total Outflow (m³):</label>
+                    <input type="number" id="O" name="O" value="5000">
+                </div>
+                <div class="form-group">
+                    <label for="V_initial">Initial Water Volume (m³):</label>
+                    <input type="number" id="V_initial" name="V_initial" value="50000">
+                </div>
+                <div class="form-group">
+                    <label for="S">Seasonal Factor:</label>
+                    <input type="number" id="S" name="S" value="1.2">
+                </div>
+                <div class="form-group">
+                    <label for="WQI">Initial Water Quality Index (0-100):</label>
+                    <input type="number" id="WQI" name="WQI" value="80">
+                </div>
+                <div class="form-group">
+                    <label for="T">Average Temperature (°C):</label>
+                    <input type="number" id="T" name="T" value="25">
+                </div>
+                <div class="form-group">
+                    <label for="H">Average Humidity (%):</label>
+                    <input type="number" id="H" name="H" value="60">
+                </div>
+                <div class="form-group">
+                    <label for="W">Average Wind Speed (m/s):</label>
+                    <input type="number" id="W" name="W" value="5">
+                </div>
+                <div class="form-group">
+                    <label for="historicalData">Upload Historical Data (CSV):</label>
+                    <input type="file" id="historicalData" name="historicalData" accept=".csv" multiple>
+                </div>
                 <button type="button" onclick="runModel()">Run Model</button>
-                <button type="button" id="downloadReport">Download Report</button>
+                <button type="button" onclick="resetForm()">Reset</button>
             </form>
 
-            <div class="chart-container">
-                <h2>Water Usage Analysis</h2>
-                <div id="waterUsageChart"></div>
+            <h2>Results</h2>
+            <div class="results">
+                <p>Final Water Volume (m³): <span id="finalWaterVolume">-</span></p>
+                <p>Water Deficit/Surplus (m³): <span id="waterDeficitSurplus">-</span></p>
+                <p>Seasonal Adjusted Volume (m³): <span id="seasonalAdjustedVolume">-</span></p>
+                <p>Predicted Water Quality Index: <span id="predictedWaterQualityIndex">-</span></p>
+                <p>Forecasted Water Volume (m³): <span id="forecastedWaterVolume">-</span></p>
             </div>
 
             <div class="chart-container">
-                <h2>Desalination Efficiency</h2>
-                <div id="desalinationChart"></div>
+                <canvas id="waterVolumeChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="deficitSurplusChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="waterQualityChart"></canvas>
             </div>
 
-            <div class="chart-container">
-                <h2>Water Quality Index</h2>
-                <div id="waterQualityChart"></div>
+            <div class="download-report">
+                <button onclick="downloadPDF()">Download Report as PDF</button>
+            </div>
+
+            <div class="about-section">
+                <h2>About</h2>
+                <p>© Naila Rais, Developed by [Your Name]</p>
             </div>
 
             <div class="help-section">
-                <h3>Help and Documentation</h3>
-                <p>For detailed guidance on using this model, refer to the documentation provided.</p>
-                <p>Ensure you upload valid CSV files and input accurate data for best results.</p>
+                <h3>Help & Instructions</h3>
+                <p>To use this model, input the relevant data into the form and click "Run Model" to generate results. You can download the report as a PDF by clicking the "Download Report as PDF" button.</p>
+                <p>Ensure that you upload historical data in CSV format to improve model accuracy. The model will forecast future water volumes and adjust for seasonal variations.</p>
             </div>
-
-            <footer>
-                <p>© Naila Rais, Developed by [Your Name]</p>
-            </footer>
         </main>
+
+        <footer>
+            <p>© Naila Rais, Developed by [Your Name]</p>
+        </footer>
     </div>
 
-    <script src="../src/app.js"></script>
+    <script>
+        function runModel() {
+            // Gather inputs
+            const P = parseFloat(document.getElementById('P').value);
+            const E = parseFloat(document.getElementById('E').value);
+            const U = parseFloat(document.getElementById('U').value);
+            const I = parseFloat(document.getElementById('I').value);
+            const O = parseFloat(document.getElementById('O').value);
+            const V_initial = parseFloat(document.getElementById('V_initial').value);
+            const S = parseFloat(document.getElementById('S').value);
+            const WQI = parseFloat(document.getElementById('WQI').value);
+            const T = parseFloat(document.getElementById('T').value);
+            const H = parseFloat(document.getElementById('H').value);
+            const W = parseFloat(document.getElementById('W').value);
+
+            // Model calculations
+            const finalWaterVolume = V_initial + I - O - U + P - E;
+            const waterDeficitSurplus = finalWaterVolume - V_initial;
+            const seasonalAdjustedVolume = finalWaterVolume * S;
+            const predictedWaterQualityIndex = WQI - (T / 10) + (H / 20) - (W / 5);
+            const forecastedWaterVolume = finalWaterVolume * 1.1; // Simple forecast model
+
+            // Display results
+            document.getElementById('finalWaterVolume').textContent = finalWaterVolume.toFixed(2);
+            document.getElementById('waterDeficitSurplus').textContent = waterDeficitSurplus.toFixed(2);
+            document.getElementById('seasonalAdjustedVolume').textContent = seasonalAdjustedVolume.toFixed(2);
+            document.getElementById('predictedWaterQualityIndex').textContent = predictedWaterQualityIndex.toFixed(2);
+            document.getElementById('forecastedWaterVolume').textContent = forecastedWaterVolume.toFixed(2);
+
+            // Update charts
+            updateCharts(finalWaterVolume, waterDeficitSurplus, predictedWaterQualityIndex);
+        }
+
+        function resetForm() {
+            document.getElementById('modelForm').reset();
+            document.getElementById('finalWaterVolume').textContent = '-';
+            document.getElementById('waterDeficitSurplus').textContent = '-';
+            document.getElementById('seasonalAdjustedVolume').textContent = '-';
+            document.getElementById('predictedWaterQualityIndex').textContent = '-';
+            document.getElementById('forecastedWaterVolume').textContent = '-';
+            updateCharts(null, null, null);
+        }
+
+        function updateCharts(finalVolume, deficitSurplus, qualityIndex) {
+            const ctx1 = document.getElementById('waterVolumeChart').getContext('2d');
+            const ctx2 = document.getElementById('deficitSurplusChart').getContext('2d');
+            const ctx3 = document.getElementById('waterQualityChart').getContext('2d');
+
+            // Clear previous charts
+            if (window.waterVolumeChart) window.waterVolumeChart.destroy();
+            if (window.deficitSurplusChart) window.deficitSurplusChart.destroy();
+            if (window.waterQualityChart) window.waterQualityChart.destroy();
+
+            // Water Volume Chart
+            window.waterVolumeChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['Initial Volume', 'Final Volume', 'Forecasted Volume'],
+                    datasets: [{
+                        label: 'Water Volume (m³)',
+                        data: [document.getElementById('V_initial').value, finalVolume || 0, document.getElementById('forecastedWaterVolume').textContent],
+                        backgroundColor: ['rgba(255, 126, 95, 0.5)', 'rgba(255, 87, 34, 0.5)', 'rgba(255, 193, 7, 0.5)']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.raw + ' m³';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Deficit/Surplus Chart
+            window.deficitSurplusChart = new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: ['Water Deficit', 'Water Surplus'],
+                    datasets: [{
+                        label: 'Water Deficit/Surplus (m³)',
+                        data: [Math.max(-deficitSurplus, 0), Math.max(deficitSurplus, 0)],
+                        backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(75, 192, 192, 0.5)']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.raw + ' m³';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Water Quality Chart
+            window.waterQualityChart = new Chart(ctx3, {
+                type: 'line',
+                data: {
+                    labels: ['Initial Quality', 'Predicted Quality'],
+                    datasets: [{
+                        label: 'Water Quality Index',
+                        data: [document.getElementById('WQI').value, qualityIndex || 0],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.raw;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.text("Advanced Water Management Model Report", 10, 10);
+            doc.text(`Final Water Volume (m³): ${document.getElementById('finalWaterVolume').textContent}`, 10, 20);
+            doc.text(`Water Deficit/Surplus (m³): ${document.getElementById('waterDeficitSurplus').textContent}`, 10, 30);
+            doc.text(`Seasonal Adjusted Volume (m³): ${document.getElementById('seasonalAdjustedVolume').textContent}`, 10, 40);
+            doc.text(`Predicted Water Quality Index: ${document.getElementById('predictedWaterQualityIndex').textContent}`, 10, 50);
+            doc.text(`Forecasted Water Volume (m³): ${document.getElementById('forecastedWaterVolume').textContent}`, 10, 60);
+
+            const canvas1 = document.getElementById('waterVolumeChart');
+            const canvas2 = document.getElementById('deficitSurplusChart');
+            const canvas3 = document.getElementById('waterQualityChart');
+
+            doc.addPage();
+            doc.text("Charts", 10, 10);
+            
+            doc.addImage(canvas1.toDataURL('image/png'), 'PNG', 10, 20, 180, 90);
+            doc.addPage();
+            doc.addImage(canvas2.toDataURL('image/png'), 'PNG', 10, 20, 180, 90);
+            doc.addPage();
+            doc.addImage(canvas3.toDataURL('image/png'), 'PNG', 10, 20, 180, 90);
+
+            doc.save('Water_Management_Report.pdf');
+        }
+    </script>
 </body>
 </html>
- 
