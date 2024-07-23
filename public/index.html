@@ -150,6 +150,7 @@
         </header>
         <main>
             <form id="modelForm">
+                <!-- Form fields -->
                 <div class="form-group">
                     <label for="P">Total Precipitation (mm):</label>
                     <input type="number" id="P" name="P" value="100">
@@ -215,122 +216,163 @@
                 <canvas id="waterVolumeChart"></canvas>
             </div>
             <div class="chart-container">
-                <canvas id="deficitSurplusChart"></canvas>
-            </div>
-            <div class="chart-container">
                 <canvas id="waterQualityChart"></canvas>
             </div>
-            <div class="chart-container">
-                <canvas id="environmentalFactorsChart"></canvas>
-            </div>
-
+            
             <div class="download-report">
                 <button onclick="downloadPDF()">Download Report</button>
             </div>
-
-            <div class="about-section">
-                <h2>About</h2>
-                <p>This application is developed and designed to provide insights into water management through advanced modeling techniques.</p>
-            </div>
-
+            
             <div class="help-section">
-                <h3>Instructions</h3>
-                <p>Enter the relevant data into the form fields above and click "Run Model" to generate results. You can reset the form at any time by clicking "Reset".</p>
+                <h3>Help & Instructions</h3>
+                <p>Use the form above to input data related to water management. Once you have entered the data, click "Run Model" to see the results and view charts.</p>
+                <p>The "Download Report" button will generate a PDF report with the charts and results.</p>
             </div>
         </main>
         <footer>
-            <p>© Naila Rais, Developed by Individual</p>
+            <div class="about-section">
+                <p>© Naila Rais, Developed by [Your Name]</p>
+            </div>
         </footer>
     </div>
-
     <script>
-        // JavaScript for chart creation and PDF download
-        function runModel() {
-            // Placeholder for model logic
-            document.getElementById('finalWaterVolume').textContent = '15000'; // Example value
-            document.getElementById('waterDeficitSurplus').textContent = '5000'; // Example value
-            document.getElementById('seasonalAdjustedVolume').textContent = '16000'; // Example value
-            document.getElementById('predictedWaterQualityIndex').textContent = '85'; // Example value
-            document.getElementById('forecastedWaterVolume').textContent = '17000'; // Example value
-            
-            // Example chart data
-            const waterVolumeCtx = document.getElementById('waterVolumeChart').getContext('2d');
-            const deficitSurplusCtx = document.getElementById('deficitSurplusChart').getContext('2d');
-            const waterQualityCtx = document.getElementById('waterQualityChart').getContext('2d');
-            const environmentalFactorsCtx = document.getElementById('environmentalFactorsChart').getContext('2d');
+        // Create global variables for charts
+        let waterVolumeChart, waterQualityChart;
 
-            new Chart(waterVolumeCtx, {
-                type: 'line',
+        // Function to initialize the charts
+        function initCharts() {
+            const ctxVolume = document.getElementById('waterVolumeChart').getContext('2d');
+            const ctxQuality = document.getElementById('waterQualityChart').getContext('2d');
+
+            waterVolumeChart = new Chart(ctxVolume, {
+                type: 'line', // Or another chart type
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    labels: [],
                     datasets: [{
                         label: 'Water Volume (m³)',
-                        data: [10000, 12000, 13000, 14000, 15000],
+                        data: [],
                         borderColor: '#ff7e5f',
                         backgroundColor: 'rgba(255, 126, 95, 0.2)',
-                        fill: true
                     }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
                 }
             });
 
-            new Chart(deficitSurplusCtx, {
-                type: 'bar',
+            waterQualityChart = new Chart(ctxQuality, {
+                type: 'line', // Or another chart type
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-                    datasets: [{
-                        label: 'Water Deficit/Surplus (m³)',
-                        data: [5000, 3000, 2000, 1000, 5000],
-                        backgroundColor: '#feb47b',
-                    }]
-                }
-            });
-
-            new Chart(waterQualityCtx, {
-                type: 'radar',
-                data: {
-                    labels: ['Parameter 1', 'Parameter 2', 'Parameter 3', 'Parameter 4'],
+                    labels: [],
                     datasets: [{
                         label: 'Water Quality Index',
-                        data: [80, 85, 90, 88],
-                        backgroundColor: 'rgba(255, 126, 95, 0.2)',
-                        borderColor: '#ff7e5f'
+                        data: [],
+                        borderColor: '#1E90FF',
+                        backgroundColor: 'rgba(30, 144, 255, 0.2)',
                     }]
-                }
-            });
-
-            new Chart(environmentalFactorsCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Temperature', 'Humidity', 'Wind Speed'],
-                    datasets: [{
-                        label: 'Environmental Factors',
-                        data: [25, 60, 5],
-                        backgroundColor: ['#ff7e5f', '#feb47b', '#87CEFA']
-                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
                 }
             });
         }
 
-        function resetForm() {
-            document.getElementById('modelForm').reset();
+        // Function to run the model and update results
+        function runModel() {
+            // Retrieve values from form inputs
+            const P = parseFloat(document.getElementById('P').value);
+            const E = parseFloat(document.getElementById('E').value);
+            const U = parseFloat(document.getElementById('U').value);
+            const I = parseFloat(document.getElementById('I').value);
+            const O = parseFloat(document.getElementById('O').value);
+            const V_initial = parseFloat(document.getElementById('V_initial').value);
+            const S = parseFloat(document.getElementById('S').value);
+            const WQI = parseFloat(document.getElementById('WQI').value);
+            const T = parseFloat(document.getElementById('T').value);
+            const H = parseFloat(document.getElementById('H').value);
+            const W = parseFloat(document.getElementById('W').value);
+            
+            // Perform calculations for model (placeholder logic)
+            const finalWaterVolume = V_initial + I - O - U; // Simplified calculation
+            const waterDeficitSurplus = finalWaterVolume - E;
+            const seasonalAdjustedVolume = finalWaterVolume * S;
+            const predictedWaterQualityIndex = WQI - (T - 20) * 0.5; // Simplified prediction
+            const forecastedWaterVolume = finalWaterVolume + P; // Simplified forecast
+
+            // Update results in the page
+            document.getElementById('finalWaterVolume').innerText = finalWaterVolume.toFixed(2);
+            document.getElementById('waterDeficitSurplus').innerText = waterDeficitSurplus.toFixed(2);
+            document.getElementById('seasonalAdjustedVolume').innerText = seasonalAdjustedVolume.toFixed(2);
+            document.getElementById('predictedWaterQualityIndex').innerText = predictedWaterQualityIndex.toFixed(2);
+            document.getElementById('forecastedWaterVolume').innerText = forecastedWaterVolume.toFixed(2);
+
+            // Update charts
+            updateCharts(finalWaterVolume, predictedWaterQualityIndex);
         }
 
+        // Function to update charts
+        function updateCharts(waterVolume, waterQuality) {
+            // Assuming you have historical data to display on charts
+            const labels = ['Current', 'Forecast'];
+            const volumeData = [waterVolume, waterVolume + 5000]; // Example data
+            const qualityData = [waterQuality, waterQuality + 5]; // Example data
+
+            waterVolumeChart.data.labels = labels;
+            waterVolumeChart.data.datasets[0].data = volumeData;
+            waterVolumeChart.update();
+
+            waterQualityChart.data.labels = labels;
+            waterQualityChart.data.datasets[0].data = qualityData;
+            waterQualityChart.update();
+        }
+
+        // Function to download the report as a PDF
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.text("Water Management Report", 10, 10);
-            doc.text(`Final Water Volume: ${document.getElementById('finalWaterVolume').textContent}`, 10, 20);
-            doc.text(`Water Deficit/Surplus: ${document.getElementById('waterDeficitSurplus').textContent}`, 10, 30);
-            doc.text(`Seasonal Adjusted Volume: ${document.getElementById('seasonalAdjustedVolume').textContent}`, 10, 40);
-            doc.text(`Predicted Water Quality Index: ${document.getElementById('predictedWaterQualityIndex').textContent}`, 10, 50);
-            doc.text(`Forecasted Water Volume: ${document.getElementById('forecastedWaterVolume').textContent}`, 10, 60);
 
+            // Add title
+            doc.setFontSize(22);
+            doc.text('Water Management Model Report', 14, 22);
+
+            // Add results
+            doc.setFontSize(16);
+            doc.text(`Final Water Volume: ${document.getElementById('finalWaterVolume').innerText}`, 14, 40);
+            doc.text(`Water Deficit/Surplus: ${document.getElementById('waterDeficitSurplus').innerText}`, 14, 50);
+            doc.text(`Seasonal Adjusted Volume: ${document.getElementById('seasonalAdjustedVolume').innerText}`, 14, 60);
+            doc.text(`Predicted Water Quality Index: ${document.getElementById('predictedWaterQualityIndex').innerText}`, 14, 70);
+            doc.text(`Forecasted Water Volume: ${document.getElementById('forecastedWaterVolume').innerText}`, 14, 80);
+
+            // Add charts
             html2canvas(document.querySelector('.chart-container')).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
-                doc.addImage(imgData, 'PNG', 10, 70, 180, 160);
-                doc.save('water_management_report.pdf');
+                doc.addImage(imgData, 'PNG', 14, 90, 180, 100);
+                doc.save('Water_Management_Model_Report.pdf');
             });
         }
+
+        // Function to reset form fields
+        function resetForm() {
+            document.getElementById('modelForm').reset();
+            // Reset chart data
+            if (waterVolumeChart) {
+                waterVolumeChart.data.labels = [];
+                waterVolumeChart.data.datasets[0].data = [];
+                waterVolumeChart.update();
+            }
+            if (waterQualityChart) {
+                waterQualityChart.data.labels = [];
+                waterQualityChart.data.datasets[0].data = [];
+                waterQualityChart.update();
+            }
+        }
+
+        // Initialize charts on page load
+        window.onload = function() {
+            initCharts();
+        };
     </script>
 </body>
 </html>
